@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Application Assistant - Real Backend</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* (Keep all the CSS from previous version) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .app {
+            background: white;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            min-height: 80vh;
+        }
+
+        .tabs {
+            display: flex;
+            background: var(--light);
+            border-bottom: 1px solid #ddd;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+            font-weight: bold;
+            background: white;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--primary);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background: var(--secondary);
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-success:hover {
+            background: #3aa8d0;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #d11465;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+        }
+
+        .btn-warning:hover {
+            background: #df8510;
+        }
+
+        .application-card {
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 15px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s;
+        }
+
+        .application-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            flex: 1;
+            min-width: 150px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .status-applied {
+            background: #d4edff;
+            color: #004085;
+        }
+
+        .status-interview {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-offer {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-container input, .search-container select {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .actions button {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .company-logo {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .application-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .application-details {
+            flex: 1;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+
+        .job-board-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .job-board-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .job-board-card.active {
+            border-color: var(--primary);
+            background: #f0f7ff;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .job-meta {
+            display: flex;
+            gap: 15px;
+            margin: 10px 0;
+            font-size: 14px;
+            color: var(--gray);
+            flex-wrap: wrap;
+        }
+
+        .job-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .api-status {
+            display: flex;
+            gap: 15px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+
+        .api-status-item {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .api-status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .api-status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .stats {
+                flex-direction: column;
+            }
+            
+            .search-container {
+                flex-direction: column;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .tab {
+                min-width: 100px;
+                padding: 12px 10px;
+                font-size: 14px;
+            }
+            
+            .job-meta {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-robot"></i>
+                Job Application Assistant
+            </div>
+            <div class="user-info">
+                <i class="fas fa-server"></i> <span id="backend-status">Connecting...</span>
+            </div>
+        </header>
+        
+        <div class="app">
+            <div class="tabs">
+                <div class="tab active" data-page="dashboard">
+                    <i class="fas fa-home"></i> Dashboard
+                </div>
+                <div class="tab" data-page="profile">
+                    <i class="fas fa-user"></i> Profile
+                </div>
+                <div class="tab" data-page="applications">
+                    <i class="fas fa-file-alt"></i> Applications
+                </div>
+                <div class="tab" data-page="real-job-search">
+                    <i class="fas fa-search"></i> Real Job Search
+                </div>
+                <div class="tab" data-page="settings">
+                    <i class="fas fa-cog"></i> Settings
+                </div>
+            </div>
+            
+            <div class="content">
+                <!-- Dashboard Page -->
+                <div id="dashboard-page" class="page active">
+                    <h2><i class="fas fa-home"></i> Dashboard</h2>
+                    
+                    <div class="stats">
+                        <div class="stat-card">
+                            <div class="stat-number" id="total-applications">0</div>
+                            <div class="stat-label">Total Applications</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="time-saved">0h</div>
+                            <div class="stat-label">Time Saved</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="auto-fill-count">0</div>
+                            <div class="stat-label">Auto-Filled Forms</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="success-rate">0%</div>
+                            <div class="stat-label">Success Rate</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3><i class="fas fa-rocket"></i> Quick Start</h3>
+                        <div class="actions">
+                            <button onclick="showPage('profile')">
+                                <i class="fas fa-user-edit"></i> Setup Profile
+                            </button>
+                            <button onclick="showPage('real-job-search')">
+                                <i class="fas fa-search"></i> Find Real Jobs
+                            </button>
+                            <button onclick="showPage('applications')">
+                                <i class="fas fa-file-alt"></i> View Applications
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                        <div id="recent-activity">
+                            <div class="empty-state">
+                                <i class="fas fa-clock"></i>
+                                <p>No recent activity yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Profile Page -->
+                <div id="profile-page" class="page">
+                    <h2><i class="fas fa-user"></i> Application Profile</h2>
+                    
+                    <div class="card">
+                        <h3><i class="fas fa-id-card"></i> Personal Information</h3>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="profile-name" placeholder="Your full name">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="profile-email" placeholder="Your email">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" id="profile-phone" placeholder="Your phone number">
+                        </div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" id="profile-location" placeholder="City, State">
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3><i class="fas fa-graduation-cap"></i> Education</h3>
+                        <div class="form-group">
+                            <label>Highest Degree</label>
+                            <input type="text" id="profile-degree" placeholder="e.g. Bachelor of Science in Computer Science">
+                        </div>
+                        <div class="form-group">
+                            <label>University</label>
+                            <input type="text" id="profile-university" placeholder="University name">
+                        </div>
+                        <div class="form-group">
+                            <label>Graduation Year</label>
+                            <input type="number" id="profile-grad-year" placeholder="YYYY">
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3><i class="fas fa-briefcase"></i> Work Experience</h3>
+                        <div class="form-group">
+                            <label>Current/Most Recent Job Title</label>
+                            <input type="text" id="profile-job-title" placeholder="e.g. Software Engineer">
+                        </div>
+                        <div class="form-group">
+                            <label>Company</label>
+                            <input type="text" id="profile-company" placeholder="Company name">
+                        </div>
+                        <div class="form-group">
+                            <label>Years of Experience</label>
+                            <input type="number" id="profile-experience" placeholder="Number of years">
+                        </div>
+                        <div class="form-group">
+                            <label>Skills (comma separated)</label>
+                            <textarea id="profile-skills" rows="3" placeholder="JavaScript, Python, React, Node.js..."></textarea>
+                        </div>
+                    </div>
+
+                    <button id="save-profile-btn" class="btn-success">
+                        <i class="fas fa-save"></i> Save Profile
+                    </button>
+                </div>
+                
+                <!-- Applications Page -->
+                <div id="applications-page" class="page">
+                    <h2><i class="fas fa-file-alt"></i> Application History</h2>
+                    
+                    <div class="search-container">
+                        <input type="text" id="application-search" placeholder="Search by company or job title...">
+                        <select id="status-filter">
+                            <option value="">All Statuses</option>
+                            <option value="applied">Applied</option>
+                            <option value="interview">Interview</option>
+                            <option value="offer">Offer</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                        <button id="search-app-btn">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+                    
+                    <div class="card">
+                        <h3><i class="fas fa-list"></i> Your Applications</h3>
+                        <div id="applications-list">
+                            <!-- Applications will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Real Job Search Page -->
+                <div id="real-job-search-page" class="page">
+                    <h2><i class="fas fa-search"></i> Real Job Search</h2>
+                    
+                    <div class="card">
+                        <h3><i class="fas fa-filter"></i> Search Real Jobs</h3>
+                        
+                        <div class="api-status" id="api-status">
+                            <!-- API status will be populated here -->
+                        </div>
+                        
+                        <div class="search-container">
+                            <input type="text" id="real-search-keywords" placeholder="Job title, skills, or keywords (e.g. software engineer)" value="software engineer">
+                            <input type="text" id="real-search-location" placeholder="Location (e.g. London, Remote)" value="london">
+                            <select id="real-search-source">
+                                <option value="all">All Sources</option>
+                                <option value="adzuna">Adzuna API</option>
+                                <option value="reed">Reed API (UK)</option>
+                                <option value="usajobs">USAJobs API</option>
+                            </select>
+                            <button id="real-search-jobs-btn" class="btn-success">
+                                <i class="fas fa-search"></i> Search Real Jobs
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3><i class="fas fa-briefcase"></i> Real Job Results</h3>
+                        <div id="real-job-results">
+                            <div class="empty-state">
+                                <i class="fas fa-search"></i>
+                                <p>Enter search criteria to find real jobs</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Settings Page -->
+                <div id="settings-page" class="page">
+                    <h2><i class="fas fa-cog"></i> Settings</h2>
+                    
+                    <div class="card">
+                        <h3><i class="fas fa-server"></i> Backend Configuration</h3>
+                        <div class="form-group">
+                            <label>Backend API URL</label>
+                            <input type="text" id="backend-url" value="http://localhost:3001" placeholder="http://localhost:3001">
+                            <small>Change this if your backend is running on a different URL</small>
+                        </div>
+                        <button id="test-backend-btn" class="btn-success">
+                            <i class="fas fa-plug"></i> Test Backend Connection
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <h3><i class="fas fa-download"></i> Data Management</h3>
+                        <div class="actions">
+                            <button id="export-profile">
+                                <i class="fas fa-file-export"></i> Export Profile Data
+                            </button>
+                            <button id="export-applications">
+                                <i class="fas fa-download"></i> Export Applications
+                            </button>
+                            <button id="import-data" class="btn-warning">
+                                <i class="fas fa-file-import"></i> Import Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            backendUrl: 'http://localhost:3001' // Change this if your backend is deployed elsewhere
+        };
+
+        // Data storage
+        let applications = JSON.parse(localStorage.getItem('jobApplications')) || [];
+        let profile = JSON.parse(localStorage.getItem('jobProfile')) || {};
+        let apiStatus = {
+            adzuna: false,
+            reed: false,
+            usajobs: false
+        };
+        
+        // DOM Elements
+        const tabs = document.querySelectorAll('.tab');
+        const pages = document.querySelectorAll('.page');
+        
+        // Initialize the app
+        async function initApp() {
+            // Load saved data
+            loadProfile();
+            loadApplications();
+            updateDashboard();
+            setupEventListeners();
+            
+            // Check backend status
+            await checkBackendStatus();
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Tab navigation
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const pageId = tab.getAttribute('data-page') + '-page';
+                    showPage(pageId);
+                });
+            });
+            
+            // Save profile
+            document.getElementById('save-profile-btn').addEventListener('click', saveProfile);
+            
+            // Job search
+            document.getElementById('real-search-jobs-btn').addEventListener('click', searchRealJobs);
+            
+            // Application search
+            document.getElementById('search-app-btn').addEventListener('click', searchApplications);
+            document.getElementById('status-filter').addEventListener('change', searchApplications);
+            
+            // Settings
+            document.getElementById('test-backend-btn').addEventListener('click', checkBackendStatus);
+            document.getElementById('backend-url').addEventListener('change', updateBackendUrl);
+            
+            // Export
+            document.getElementById('export-profile').addEventListener('click', exportProfile);
+            document.getElementById('export-applications').addEventListener('click', exportApplications);
+        }
+        
+        // Show specific page
+        function showPage(pageId) {
+            // Update active tab
+            tabs.forEach(tab => {
+                const tabPageId = tab.getAttribute('data-page') + '-page';
+                tab.classList.toggle('active', tabPageId === pageId);
+            });
+            
+            // Show selected page
+            pages.forEach(page => {
+                page.classList.toggle('active', page.id === pageId);
+            });
+            
+            // Update page-specific content
+            if (pageId === 'dashboard-page') {
+                updateDashboard();
+            } else if (pageId === 'applications-page') {
+                loadApplications();
+            } else if (pageId === 'real-job-search-page') {
+                updateApiStatusDisplay();
+            }
+        }
+        
+        // Load profile into form
+        function loadProfile() {
+            if (!profile) return;
+            
+            document.getElementById('profile-name').value = profile.name || '';
+            document.getElementById('profile-email').value = profile.email || '';
+            document.getElementById('profile-phone').value = profile.phone || '';
+            document.getElementById('profile-location').value = profile.location || '';
+            document.getElementById('profile-degree').value = profile.degree || '';
+            document.getElementById('profile-university').value = profile.university || '';
+            document.getElementById('profile-grad-year').value = profile.gradYear || '';
+            document.getElementById('profile-job-title').value = profile.jobTitle || '';
+            document.getElementById('profile-company').value = profile.company || '';
+            document.getElementById('profile-experience').value = profile.experience || '';
+            document.getElementById('profile-skills').value = profile.skills || '';
+        }
+        
+        // Save profile
+        function saveProfile() {
+            profile = {
+                name: document.getElementById('profile-name').value,
+                email: document.getElementById('profile-email').value,
+                phone: document.getElementById('profile-phone').value,
+                location: document.getElementById('profile-location').value,
+                degree: document.getElementById('profile-degree').value,
+                university: document.getElementById('profile-university').value,
+                gradYear: document.getElementById('profile-grad-year').value,
+                jobTitle: document.getElementById('profile-job-title').value,
+                company: document.getElementById('profile-company').value,
+                experience: document.getElementById('profile-experience').value,
+                skills: document.getElementById('profile-skills').value,
+                lastUpdated: new Date().toISOString()
+            };
+            
+            localStorage.setItem('jobProfile', JSON.stringify(profile));
+            showAlert('Profile saved successfully!', 'success');
+        }
+        
+        // Check backend status
+        async function checkBackendStatus() {
+            const backendUrl = document.getElementById('backend-url').value;
+            const statusElement = document.getElementById('backend-status');
+            
+            try {
+                statusElement.innerHTML = '<div class="loading"></div> Checking...';
+                
+                const response = await fetch(`${backendUrl}/api/health`);
+                const data = await response.json();
+                
+                statusElement.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i> Backend Connected';
+                
+                // Update API status
+                apiStatus = data.services;
+                updateApiStatusDisplay();
+                
+                showAlert('Backend connection successful!', 'success');
+            } catch (error) {
+                console.error('Backend connection failed:', error);
+                statusElement.innerHTML = '<i class="fas fa-times-circle" style="color: var(--danger);"></i> Backend Offline';
+                showAlert('Backend connection failed. Make sure the server is running.', 'error');
+                
+                // Set all APIs as inactive
+                apiStatus = { adzuna: false, reed: false, usajobs: false };
+                updateApiStatusDisplay();
+            }
+        }
+        
+        // Update API status display
+        function updateApiStatusDisplay() {
+            const apiStatusElement = document.getElementById('api-status');
+            
+            apiStatusElement.innerHTML = `
+                <span class="api-status-item ${apiStatus.adzuna ? 'api-status-active' : 'api-status-inactive'}">
+                    <i class="fas ${apiStatus.adzuna ? 'fa-check' : 'fa-times'}"></i>
+                    Adzuna API
+                </span>
+                <span class="api-status-item ${apiStatus.reed ? 'api-status-active' : 'api-status-inactive'}">
+                    <i class="fas ${apiStatus.reed ? 'fa-check' : 'fa-times'}"></i>
+                    Reed API
+                </span>
+                <span class="api-status-item ${apiStatus.usajobs ? 'api-status-active' : 'api-status-inactive'}">
+                    <i class="fas ${apiStatus.usajobs ? 'fa-check' : 'fa-times'}"></i>
+                    USAJobs API
+                </span>
+            `;
+        }
+        
+        // Update backend URL
+        function updateBackendUrl() {
+            CONFIG.backendUrl = document.getElementById('backend-url').value;
+            localStorage.setItem('backendUrl', CONFIG.backendUrl);
+        }
+        
+        // Search REAL jobs using backend APIs
+        async function searchRealJobs() {
+            const keywords = document.getElementById('real-search-keywords').value;
+            const location = document.getElementById('real-search-location').value;
+            const source = document.getElementById('real-search-source').value;
+            const backendUrl = document.getElementById('backend-url').value;
+            
+            if (!keywords) {
+                showAlert('Please enter job keywords to search', 'error');
+                return;
+            }
+            
+            const jobResults = document.getElementById('real-job-results');
+            jobResults.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <div class="loading"></div>
+                    <p>Searching for real jobs via backend API...</p>
+                </div>
+            `;
+            
+            try {
+                let endpoint;
+                const params = new URLSearchParams({
+                    keywords,
+                    location
+                });
+                
+                if (source === 'all') {
+                    endpoint = `${backendUrl}/api/jobs/search?${params}`;
+                } else {
+                    endpoint = `${backendUrl}/api/jobs/${source}?${params}`;
+                }
+                
+                const response = await fetch(endpoint);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayRealJobs(data.jobs);
+                    showAlert(`Found ${data.jobs.length} jobs from ${source}`, 'success');
+                } else {
+                    throw new Error(data.error || 'Search failed');
+                }
+                
+            } catch (error) {
+                console.error('Job search error:', error);
+                jobResults.innerHTML = `
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <strong>Search Error:</strong> ${error.message}
+                            <button onclick="searchRealJobs()" style="margin-left: 10px;">
+                                Try Again
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Display real job results
+        function displayRealJobs(jobs) {
+            const jobResults = document.getElementById('real-job-results');
+            
+            if (!jobs || jobs.length === 0) {
+                jobResults.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <p>No jobs found. Try different search terms.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            jobResults.innerHTML = jobs.map(job => `
+                <div class="application-card">
+                    <div class="application-header">
+                        <div class="company-logo">${job.company.substring(0, 2).toUpperCase()}</div>
+                        <div class="application-details">
+                            <h4>${job.title}</h4>
+                            <p>${job.company} • ${job.location}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="job-meta">
+                        <span><i class="fas fa-money-bill-wave"></i> ${job.salary || 'Salary not specified'}</span>
+                        <span><i class="fas fa-clock"></i> ${job.posted}</span>
+                        <span><i class="fas fa-database"></i> ${job.source}</span>
+                    </div>
+                    
+                    <p>${job.description || 'No description available'}</p>
+                    
+                    <div class="actions">
+                        <button class="btn-success apply-real-job" 
+                                data-title="${job.title}" 
+                                data-company="${job.company}"
+                                data-url="${job.url}">
+                            <i class="fas fa-paper-plane"></i> Track Application
+                        </button>
+                        <a href="${job.url}" target="_blank" class="btn-warning" style="text-decoration: none;">
+                            <i class="fas fa-external-link-alt"></i> View Job
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Add event listeners to apply buttons
+            document.querySelectorAll('.apply-real-job').forEach(button => {
+                button.addEventListener('click', function() {
+                    const jobTitle = this.getAttribute('data-title');
+                    const company = this.getAttribute('data-company');
+                    const jobUrl = this.getAttribute('data-url');
+                    
+                    // Create a new application
+                    const application = {
+                        id: Date.now().toString(),
+                        company,
+                        title: jobTitle,
+                        date: new Date().toISOString().split('T')[0],
+                        status: 'applied',
+                        url: jobUrl,
+                        notes: `Found via real job search`,
+                        source: 'Real Job API'
+                    };
+                    
+                    applications.push(application);
+                    localStorage.setItem('jobApplications', JSON.stringify(applications));
+                    
+                    showAlert(`Application to ${company} tracked!`, 'success');
+                    updateDashboard();
+                });
+            });
+        }
+        
+        // Load and display applications
+        function loadApplications() {
+            displayApplications(applications);
+        }
+        
+        // Search applications
+        function searchApplications() {
+            const searchTerm = document.getElementById('application-search').value.toLowerCase();
+            const statusFilter = document.getElementById('status-filter').value;
+            
+            let filteredApplications = applications;
+            
+            if (searchTerm) {
+                filteredApplications = filteredApplications.filter(app => 
+                    app.company.toLowerCase().includes(searchTerm) || 
+                    app.title.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (statusFilter) {
+                filteredApplications = filteredApplications.filter(app => app.status === statusFilter);
+            }
+            
+            displayApplications(filteredApplications);
+        }
+        
+        // Display applications in the list
+        function displayApplications(apps) {
+            const applicationsList = document.getElementById('applications-list');
+            
+            if (apps.length === 0) {
+                applicationsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-file-alt"></i>
+                        <p>No applications found.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort by date (newest first)
+            apps.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            applicationsList.innerHTML = apps.map(app => `
+                <div class="application-card">
+                    <div class="application-header">
+                        <div class="company-logo">${app.company.substring(0, 2).toUpperCase()}</div>
+                        <div class="application-details">
+                            <h4>${app.title}</h4>
+                            <p>${app.company} • Applied: ${formatDate(app.date)} • Source: ${app.source || 'Manual'}</p>
+                        </div>
+                    </div>
+                    <p>${app.notes || 'No additional notes'}</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                        <span class="status-badge status-${app.status}">${getStatusText(app.status)}</span>
+                        <div>
+                            ${app.url ? `<a href="${app.url}" target="_blank" style="margin-right: 10px; color: var(--primary);"><i class="fas fa-external-link-alt"></i></a>` : ''}
+                            <button class="btn-danger delete-app" data-id="${app.id}">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-app').forEach(button => {
+                button.addEventListener('click', function() {
+                    const appId = this.getAttribute('data-id');
+                    deleteApplication(appId);
+                });
+            });
+        }
+        
+        // Delete application
+        function deleteApplication(appId) {
+            if (confirm('Are you sure you want to delete this application?')) {
+                applications = applications.filter(app => app.id !== appId);
+                localStorage.setItem('jobApplications', JSON.stringify(applications));
+                
+                loadApplications();
+                updateDashboard();
+                
+                showAlert('Application deleted successfully!', 'success');
+            }
+        }
+        
+        // Update dashboard
+        function updateDashboard() {
+            // Update stats
+            document.getElementById('total-applications').textContent = applications.length;
+            
+            const autoFillCount = parseInt(localStorage.getItem('autoFillCount') || '0');
+            document.getElementById('auto-fill-count').textContent = autoFillCount;
+            
+            // Calculate time saved (estimate 10 minutes per auto-fill)
+            const timeSavedMinutes = autoFillCount * 10;
+            const timeSavedHours = Math.floor(timeSavedMinutes / 60);
+            document.getElementById('time-saved').textContent = `${timeSavedHours}h`;
+            
+            const offerCount = applications.filter(app => app.status === 'offer').length;
+            const successRate = applications.length > 0 ? 
+                Math.round((offerCount / applications.length) * 100) : 0;
+            document.getElementById('success-rate').textContent = `${successRate}%`;
+            
+            // Update recent activity
+            const recentActivity = document.getElementById('recent-activity');
+            if (applications.length === 0 && autoFillCount === 0) {
+                recentActivity.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-clock"></i>
+                        <p>No recent activity yet</p>
+                    </div>
+                `;
+            } else {
+                let activityHTML = '';
+                
+                // Add recent applications
+                const recentApps = applications.slice(0, 3);
+                if (recentApps.length > 0) {
+                    activityHTML += '<h4>Recent Applications</h4>';
+                    recentApps.forEach(app => {
+                        activityHTML += `
+                            <div class="application-card" style="margin-bottom: 10px;">
+                                <strong>${app.company}</strong> - ${app.title}<br>
+                                <small>${formatDate(app.date)} • ${getStatusText(app.status)}</small>
+                            </div>
+                        `;
+                    });
+                }
+                
+                recentActivity.innerHTML = activityHTML;
+            }
+        }
+        
+        // Export profile data
+        function exportProfile() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(profile, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "job-profile.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            
+            showAlert('Profile exported successfully!', 'success');
+        }
+        
+        // Export applications
+        function exportApplications() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(applications, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "job-applications.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            
+            showAlert('Applications exported successfully!', 'success');
+        }
+        
+        // Helper functions
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+        
+        function getStatusText(status) {
+            const statusMap = {
+                applied: 'Applied',
+                interview: 'Interview',
+                offer: 'Offer',
+                rejected: 'Rejected'
+            };
+            return statusMap[status] || status;
+        }
+        
+        function showAlert(message, type) {
+            // Create alert element
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                ${message}
+            `;
+            
+            // Add to page
+            document.querySelector('.content').prepend(alert);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                alert.remove();
+            }, 3000);
+        }
+        
+        // Initialize the app when the page loads
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
